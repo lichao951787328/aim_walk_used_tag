@@ -1,0 +1,4 @@
+<launch>
+  <node name="mutiThread_perception" pkg="mutiThread_perception" type="aim_and_straight" output="screen" />
+  <node name="rviz_aim_walk" pkg="rviz" type="rviz" args="-d $(find mutiThread_perception)/config/show_steps.rviz"  />
+</launch>
