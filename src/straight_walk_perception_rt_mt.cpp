@@ -142,15 +142,18 @@ void communicate()
             x_d.head(3) = Eigen::Vector3d::UnitY();
             x_d(3) = 1.0;
             Eigen::Vector3d direct = (World_T_Tar * x_d).head(3);
+            LOG(INFO)<<"DIRECT 3D: "<<direct.transpose()<<endl;
             Eigen::Vector2d direct_2d = direct.head(2).normalized();
+            LOG(INFO)<<"goal 3d: "<<World_T_Tar.block<3, 1>(0, 3).transpose()<<endl;
             Eigen::Vector2d goal = World_T_Tar.block<2, 1>(0, 3);
             LOG(INFO)<<"goal position: "<<goal.transpose()<<endl;
-            double dis_tag = 0.1;// 此为粘贴时测量
+            double dis_tag = 0.1 + 0.17;// 此为粘贴时测量
             Eigen::Vector2d walk_goal = goal - dis_tag * direct_2d;
             // 至此，便得到了方向和目标点
 
-            double dis = abs(walk_goal.dot(direct_2d));
-            double goal_dis = dis - 0.17;//前脚长15cm + 1cm阈值
+            // double dis = abs(walk_goal.dot(direct_2d));
+            double goal_dis = walk_goal.norm();
+            // double goal_dis = dis - 0.17;//前脚长15cm + 1cm阈值
             LOG(INFO)<<"aim direct "<<direct_2d.transpose()<<endl;
             LOG(INFO)<<"goal distance : "<<goal_dis<<endl;
             double theta = acos(Eigen::Vector2d::UnitX().dot(direct_2d));
@@ -160,6 +163,7 @@ void communicate()
             {
             double x, y, theta;
             };
+            Eigen::Vector2d walk_dir = walk_goal.head(2).normalized();
             vector<footstep> steps_result;
             if (direct_2d(1) < 0)//右转
             {
@@ -175,7 +179,7 @@ void communicate()
                 line_steps.reserve(num_foot);
                 for (size_t i = 0; i < num_foot; i++)
                 {
-                    Eigen::Vector2d line_cor = length_step *(i+1) *direct_2d;
+                    Eigen::Vector2d line_cor = length_step *(i+1) *walk_dir;
                     double tmptheta = (i+1) * theta_step;
                     line_step tmp_line_step;
                     tmp_line_step.x = line_cor(0);
@@ -232,7 +236,7 @@ void communicate()
                 steps_result.reserve(num_foot * 2);
                 for (size_t i = 0; i < num_foot; i++)
                 {
-                    Eigen::Vector2d line_cor = length_step *(i+1) *direct_2d;
+                    Eigen::Vector2d line_cor = length_step *(i+1) *walk_dir;
                     double tmptheta = (i+1) * theta_step;
                     line_step tmp_line_step;
                     tmp_line_step.x = line_cor(0);
