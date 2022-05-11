@@ -11,7 +11,6 @@
 #include <message_filters/subscriber.h>
 #include "cv_bridge/cv_bridge.h"
 #include "type.h"
-#include <ar_track_alvar_msgs/AlvarMarkers.h>
 #include <apriltag_ros/AprilTagDetectionArray.h>
 #define IMUDATASIZE 10
 using namespace std;

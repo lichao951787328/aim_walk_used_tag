@@ -15,7 +15,6 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_conversions
   cv_bridge
   image_transport
-  ar_track_alvar_msgs
   geometry_msgs
   apriltag_ros
 )

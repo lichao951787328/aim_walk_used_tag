@@ -119,7 +119,8 @@ void communicate()
             // cout<<"Base_R_VisionTemp = "<<endl<<Base_R_VisionTemp<<endl;
             Base_T_Vision.block<3,3>(0,0) = Base_R_VisionTemp*(Eigen::AngleAxisd(_deg2rad(BaseVisionPitchDeg),Eigen::Vector3d::UnitX())).matrix();
             World_T_Base = getT(base_x, base_y, base_height, base_posture[0], base_posture[1], base_posture[2]);
-            VisionL515_T_VisionD435i = getT(-0.0325, 0.01865, 0.00575, 0, 0, 0);
+            // VisionL515_T_VisionD435i = getT(-0.0325, 0.01865, 0.00575, 0, 0, 0);
+            VisionL515_T_VisionD435i.setIdentity();
             geometry_msgs::Pose p;
             unique_lock<mutex> g_(m_cameradata, std::defer_lock);
             g_.lock();
@@ -141,16 +142,20 @@ void communicate()
             Eigen::Vector4d x_d;
             x_d.head(3) = Eigen::Vector3d::UnitY();
             x_d(3) = 1.0;
-            Eigen::Vector3d direct = (World_T_Tar * x_d).head(3);
+            // Eigen::Vector3d direct = (World_T_Tar * x_d).head(3);
+            Eigen::Vector3d direct = World_T_Tar.block<3, 3>(0, 0) * Eigen::Vector3d::UnitY();
+            LOG(INFO)<<"DIRECT 3D: "<<direct.transpose()<<endl;
+            LOG(INFO)<<"goal 3d: "<<World_T_Tar.block<3, 1>(0, 3).transpose()<<endl;
             Eigen::Vector2d direct_2d = direct.head(2).normalized();
             Eigen::Vector2d goal = World_T_Tar.block<2, 1>(0, 3);
             LOG(INFO)<<"goal position: "<<goal.transpose()<<endl;
-            double dis_tag = 0.1;// 此为粘贴时测量
+            double dis_tag = 0.2 - 0.095;// 此为粘贴时测量
             Eigen::Vector2d walk_goal = goal - dis_tag * direct_2d;
             // 至此，便得到了方向和目标点
 
             double dis = abs(walk_goal.dot(direct_2d));
             double goal_dis = dis - 0.17;//前脚长15cm + 1cm阈值
+            // double goal_dis = walk_goal.norm();
             LOG(INFO)<<"aim direct "<<direct_2d.transpose()<<endl;
             LOG(INFO)<<"goal distance : "<<goal_dis<<endl;
             double theta = acos(Eigen::Vector2d::UnitX().dot(direct_2d));
@@ -160,6 +165,7 @@ void communicate()
             {
             double x, y, theta;
             };
+            // Eigen::Vector2d walk_dir = walk_goal.head(2).normalized();
             vector<footstep> steps_result;
             if (direct_2d(1) < 0)//右转
             {

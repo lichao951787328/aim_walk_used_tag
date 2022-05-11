@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+  </include>
+  <include file="$(find apriltag_ros)/launch/continuous_detection_D435.launch">
+  </include>
+  <node name="mutiThread_perception" pkg="mutiThread_perception_tag" type="aim_and_straight_tag" output="screen" />
+</launch>
