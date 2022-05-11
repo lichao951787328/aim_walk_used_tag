@@ -147,6 +147,7 @@ void communicate()
             LOG(INFO)<<"DIRECT 3D: "<<direct.transpose()<<endl;
             LOG(INFO)<<"goal 3d: "<<World_T_Tar.block<3, 1>(0, 3).transpose()<<endl;
             Eigen::Vector2d direct_2d = direct.head(2).normalized();
+            LOG(INFO)<<"goal 3d: "<<World_T_Tar.block<3, 1>(0, 3).transpose()<<endl;
             Eigen::Vector2d goal = World_T_Tar.block<2, 1>(0, 3);
             LOG(INFO)<<"goal position: "<<goal.transpose()<<endl;
             double dis_tag = 0.2 - 0.095;// 此为粘贴时测量
@@ -181,7 +182,7 @@ void communicate()
                 line_steps.reserve(num_foot);
                 for (size_t i = 0; i < num_foot; i++)
                 {
-                    Eigen::Vector2d line_cor = length_step *(i+1) *direct_2d;
+                    Eigen::Vector2d line_cor = length_step *(i+1) *walk_dir;
                     double tmptheta = (i+1) * theta_step;
                     line_step tmp_line_step;
                     tmp_line_step.x = line_cor(0);
@@ -238,7 +239,7 @@ void communicate()
                 steps_result.reserve(num_foot * 2);
                 for (size_t i = 0; i < num_foot; i++)
                 {
-                    Eigen::Vector2d line_cor = length_step *(i+1) *direct_2d;
+                    Eigen::Vector2d line_cor = length_step *(i+1) *walk_dir;
                     double tmptheta = (i+1) * theta_step;
                     line_step tmp_line_step;
                     tmp_line_step.x = line_cor(0);
